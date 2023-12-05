@@ -4,6 +4,8 @@ import co.edu.cue.utils.Cancion;
 import co.edu.cue.utils.Nodo;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ListaCola {
     Nodo cab;
@@ -60,6 +62,19 @@ public class ListaCola {
         }
         fin = null; // Asegurar que fin apunte a null al vaciar la cola
     }
+
+    public List<Cancion> getCanciones() {
+        List<Cancion> canciones = new ArrayList<>();
+        movil = cab;
+
+        while (movil != null) {
+            canciones.add(movil.cancion);
+            movil = movil.sig;
+        }
+
+        return canciones;
+    }
+
     public void reproducirCola() {
         movil = cab;
 

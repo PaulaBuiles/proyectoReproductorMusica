@@ -5,16 +5,27 @@ import co.edu.cue.cola.ListaCola;
 import co.edu.cue.utils.Cancion;
 
 import javax.swing.*;
-import java.io.BufferedReader;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestMusica {
-    public static void main(String[] args) throws IOException {
+public class TestMusica extends JFrame {
+
+    private final ListaDobleEnlazada listaDoble = new ListaDobleEnlazada();
+    private final ListaCola listaCola = new ListaCola();
+    private final List<Cancion> cancionesDisponibles = new ArrayList<>();
+    private final JTextArea cancionesTextArea = new JTextArea();
+
+    public TestMusica() throws IOException {
+        super("Reproductor de Música");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 400);
+        setLocationRelativeTo(null);
+
         // Crear una lista predefinida de canciones
-        List<Cancion> cancionesDisponibles = new ArrayList<>();
         cancionesDisponibles.add(new Cancion("NADIE SABE", "BadBunny", "3:45", 100000));
         cancionesDisponibles.add(new Cancion("AYER Y HOY", "Mora", "4:20", 209999));
         cancionesDisponibles.add(new Cancion("Dile al amor", "Nico Hernandez", "3:10", 34567109));
@@ -33,68 +44,135 @@ public class TestMusica {
         cancionesDisponibles.add(new Cancion("MONACO", "BadBunny", "3:40", 220000));
         cancionesDisponibles.add(new Cancion("Quizás, tal vez", "Eladio Carrion", "3:45", 180000));
 
+        // ... (resto de las canciones)
+
         // Agregar más canciones según sea necesario
 
-        ListaDobleEnlazada listaDoble = new ListaDobleEnlazada();
-        listaDoble.iniciarListaDobleEnlazada();
+        // Crear botones
+        JButton verCancionesBtn = new JButton("Ver Canciones Disponibles");
+        JButton agregarPlaylistBtn = new JButton("Agregar a la Playlist");
+        JButton imprimirPlaylistInicioBtn = new JButton("Imprimir Playlist por el Inicio");
+        JButton imprimirPlaylistFinBtn = new JButton("Imprimir Playlist por el Fin");
+        JButton agregarColaBtn = new JButton("Agregar a la Cola de Reproducción");
+        JButton verColaBtn = new JButton("Ver Canciones en la Cola");
+        JButton borrarColaBtn = new JButton("Borrar Canción de la Cola");
+        JButton borrarPlaylistPosicionBtn = new JButton("Borrar Canción de la Playlist por Posición");
+        JButton reproducirPlaylistBtn = new JButton("Reproducir Playlist");
+        JButton reproducirColaBtn = new JButton("Reproducir Cola de Reproducción");
+        JButton salirBtn = new JButton("Salir");
 
-        ListaCola listaCola = new ListaCola();
-        listaCola.iniciarCola();
+        // Configurar diseños y eventos
+        setLayout(new BorderLayout());
 
-        int opc;
-        do {
-            try {
-                opc = Integer.parseInt(JOptionPane.showInputDialog(
-                        "1. Ver canciones disponibles\n" +
-                        "2. Agregar canción a la Playlist\n" +
-                        "3. Imprimir playlist por el inicio\n" +
-                        "4. Imprimir playlist por el fin\n" +
-                        "5. Agregar canción al inicio de la cola de reproducción\n" +
-                        "6. Ver canciones en la cola de reproducción\n" +
-                        "7. Borrar una cancion de la cola\n" +
-                        "8. Borrar una cancion de la playlist por posición\n"+
-                        "9. Reproducir Playlist\n" +
-                        "10. Reproducir Cola de reproducción\n" +
-                        "11. Salir"));
+        // Panel de botones
+        JPanel botonesPanel = new JPanel();
+        botonesPanel.setLayout(new GridLayout(5, 2, 10, 10));
+        agregarBoton(botonesPanel, verCancionesBtn);
+        agregarBoton(botonesPanel, agregarPlaylistBtn);
+        agregarBoton(botonesPanel, imprimirPlaylistInicioBtn);
+        agregarBoton(botonesPanel, imprimirPlaylistFinBtn);
+        agregarBoton(botonesPanel, agregarColaBtn);
+        agregarBoton(botonesPanel, verColaBtn);
+        agregarBoton(botonesPanel, borrarColaBtn);
+        agregarBoton(botonesPanel, borrarPlaylistPosicionBtn);
+        agregarBoton(botonesPanel, reproducirPlaylistBtn);
+        agregarBoton(botonesPanel, reproducirColaBtn);
+        agregarBoton(botonesPanel, salirBtn);
 
-                switch (opc) {
-                    case 1 -> {
-                        StringBuilder cancionesDisponiblesStr = new StringBuilder("Canciones disponibles:\n");
-                        for (int i = 0; i < cancionesDisponibles.size(); i++) {
-                            cancionesDisponiblesStr.append((i + 1)).append(". ").append(cancionesDisponibles.get(i).nombre).append("\n");
-                        }
-                        JOptionPane.showMessageDialog(null, cancionesDisponiblesStr.toString());
-                    }
-                    case 2 -> {
-                        int numCancionDoble = Integer.parseInt(JOptionPane.showInputDialog("Digite el número de la canción que desea agregar a la playlist:"));
-                        if (numCancionDoble > 0 && numCancionDoble <= cancionesDisponibles.size()) {
-                            listaDoble.insertarNodoInicio(cancionesDisponibles.get(numCancionDoble - 1));
-                            JOptionPane.showMessageDialog(null, "Canción agregada a la playlist.");
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Número de canción no válido.");
-                        }
-                    }
-                    case 3 -> listaDoble.imprimirListaCab();
-                    case 4 -> listaDoble.imprimirListaFin();
-                    case 5 -> {
-                        int numCancionCola = Integer.parseInt(JOptionPane.showInputDialog("Digite el número de la canción que desea agregar a la Cola de reproducción:"));
-                        if (numCancionCola > 0 && numCancionCola <= cancionesDisponibles.size()) {
-                            listaCola.insertarNodoCola(cancionesDisponibles.get(numCancionCola - 1));
-                            JOptionPane.showMessageDialog(null, "Canción agregada a la Cola.");
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Número de canción no válido.");
-                        }
-                    }
-                    case 6 -> listaCola.imprimirCola();
-                    case 7 -> listaCola.borrarNodoCola();
-                    case 8 -> listaDoble.borrarNodoPosicion();
-                    case 9 -> listaDoble.reproducirLista();
-                    case 10 -> listaCola.reproducirCola();
+        // Panel de canciones
+        JScrollPane cancionesScrollPane = new JScrollPane(cancionesTextArea);
+        cancionesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        cancionesScrollPane.setPreferredSize(new Dimension(200, getHeight()));
+        cancionesScrollPane.setBorder(BorderFactory.createTitledBorder("Canciones Disponibles"));
+
+        // Agregar paneles al contenedor principal
+        add(botonesPanel, BorderLayout.WEST);
+        add(cancionesScrollPane, BorderLayout.EAST);
+
+        // Configurar eventos
+        verCancionesBtn.addActionListener(e -> mostrarCancionesDisponibles());
+        agregarPlaylistBtn.addActionListener(e -> agregarAPlaylist());
+        imprimirPlaylistInicioBtn.addActionListener(e -> listaDoble.imprimirListaCab());
+        imprimirPlaylistFinBtn.addActionListener(e -> listaDoble.imprimirListaFin());
+        agregarColaBtn.addActionListener(e -> agregarACola());
+        verColaBtn.addActionListener(e -> listaCola.imprimirCola());
+        borrarColaBtn.addActionListener(e -> listaCola.borrarNodoCola());
+        borrarPlaylistPosicionBtn.addActionListener(e -> listaDoble.borrarNodoPosicion());
+        reproducirPlaylistBtn.addActionListener(e -> reproducirPlaylist());
+        reproducirColaBtn.addActionListener(e -> reproducirCola());
+        salirBtn.addActionListener(e -> System.exit(0));
+        setSize(1234, 600);
+    }
+
+    private void agregarBoton(Container container, JButton button) {
+        button.setFocusPainted(false);
+        button.setFont(new Font("Arial", Font.PLAIN, 16));
+        container.add(button);
+    }
+
+    private void mostrarCancionesDisponibles() {
+        StringBuilder cancionesDisponiblesStr = new StringBuilder("Canciones disponibles:\n");
+        for (int i = 0; i < cancionesDisponibles.size(); i++) {
+            cancionesDisponiblesStr.append((i + 1)).append(". ").append(cancionesDisponibles.get(i).nombre).append("\n");
+        }
+        cancionesTextArea.setText(cancionesDisponiblesStr.toString());
+    }
+
+    private void agregarAPlaylist() {
+        int numCancionDoble = obtenerNumeroCancion("Digite el número de la canción que desea agregar a la playlist:");
+        if (numCancionDoble > 0 && numCancionDoble <= cancionesDisponibles.size()) {
+            listaDoble.insertarNodoInicio(cancionesDisponibles.get(numCancionDoble - 1));
+            mostrarAlerta("Éxito", "Canción agregada a la playlist.");
+        } else {
+            mostrarAlerta("Error", "Número de canción no válido.");
+        }
+    }
+
+    private void agregarACola() {
+        int numCancionCola = obtenerNumeroCancion("Digite el número de la canción que desea agregar a la Cola de reproducción:");
+        if (numCancionCola > 0 && numCancionCola <= cancionesDisponibles.size()) {
+            listaCola.insertarNodoCola(cancionesDisponibles.get(numCancionCola - 1));
+            mostrarAlerta("Éxito", "Canción agregada a la Cola.");
+        } else {
+            mostrarAlerta("Error", "Número de canción no válido.");
+        }
+    }
+
+    private int obtenerNumeroCancion(String mensaje) {
+        try {
+            return Integer.parseInt(JOptionPane.showInputDialog(mensaje));
+        } catch (NumberFormatException e) {
+            mostrarAlerta("Error", "Ingrese un número válido.");
+            return -1;
+        }
+    }
+
+    private void mostrarAlerta(String titulo, String mensaje) {
+        JOptionPane.showMessageDialog(null, mensaje, titulo, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void reproducirPlaylist() {
+        Reproductor reproductorFrame = new Reproductor(listaDoble.getCanciones()); // O listaCola.getCanciones()
+        reproductorFrame.reproducirPlaylist(listaDoble.getCanciones());
+    }
+
+    private void reproducirCola() {
+        Reproductor reproductorFrame = new Reproductor(listaCola.getCanciones()); // O listaCola.getCanciones()
+        reproductorFrame.reproducirCola(listaCola.getCanciones());
+
+    }
+
+    public static void main(String[] args) {
+        try {
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    new TestMusica().setVisible(true);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Por favor, ingrese un número válido.");
-                opc = 0; // Reinicia el bucle si se produce una excepción
-            }
-        } while (opc != 11);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
